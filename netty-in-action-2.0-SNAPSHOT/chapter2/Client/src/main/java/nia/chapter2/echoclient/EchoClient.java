@@ -28,29 +28,23 @@ public class EchoClient {
 		EventLoopGroup group = new NioEventLoopGroup();
 		try {
 			Bootstrap b = new Bootstrap();
-			b.group(group)
-					.channel(NioSocketChannel.class)
+			b.group(group).channel(NioSocketChannel.class)
 					.remoteAddress(new InetSocketAddress(host, port))
 					.handler(new ChannelInitializer<SocketChannel>() {
 						@Override
 						public void initChannel(SocketChannel ch) throws Exception {
-							ch.pipeline()
-									.addLast(new EchoClientHandler());
+							ch.pipeline().addLast(new EchoClientHandler());
 						}
 					});
-			ChannelFuture f = b.connect()
-					.sync();
-			f.channel()
-					.closeFuture()
-					.sync();
+			ChannelFuture f = b.connect().sync();
+			f.channel().closeFuture().sync();
 		} finally {
-			group.shutdownGracefully()
-					.sync();
+			group.shutdownGracefully().sync();
 		}
 	}
 
 	public static void main(String[] args) throws Exception {
-		if (args.length != 2) {
+		if (args.length == 0) {
 			System.err.println("Usage: " + EchoClient.class.getSimpleName() + " <host> <port>");
 			return;
 		}

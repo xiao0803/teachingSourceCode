@@ -23,7 +23,7 @@ public class EchoServer {
 	}
 
 	public static void main(String[] args) throws Exception {
-		if (args.length != 1) {
+		if (args.length == 0) {
 			System.err.println("Usage: " + EchoServer.class.getSimpleName() + " <port>");
 			return;
 		}
@@ -42,21 +42,14 @@ public class EchoServer {
 					.childHandler(new ChannelInitializer<SocketChannel>() {
 						@Override
 						public void initChannel(SocketChannel ch) throws Exception {
-							ch.pipeline()
-									.addLast(serverHandler);
+							ch.pipeline().addLast(serverHandler);
 						}
 					});
-
-			ChannelFuture f = b.bind()
-					.sync();
-			System.out.println(EchoServer.class.getName() + " started and listening for connections on " + f.channel()
-					.localAddress());
-			f.channel()
-					.closeFuture()
-					.sync();
+			ChannelFuture f = b.bind().sync();
+			System.out.println(EchoServer.class.getName() + " started and listening for connections on " + f.channel().localAddress());
+			f.channel().closeFuture().sync();
 		} finally {
-			group.shutdownGracefully()
-					.sync();
+			group.shutdownGracefully().sync();
 		}
 	}
 }
