@@ -26,11 +26,8 @@ public class ScheduleExamples {
      * Listing 7.2 Scheduling a task with a ScheduledExecutorService
      * */
     public static void schedule() {
-        ScheduledExecutorService executor =
-                Executors.newScheduledThreadPool(10);
-
-        ScheduledFuture<?> future = executor.schedule(
-            new Runnable() {
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(10);
+        ScheduledFuture<?> future = executor.schedule(new Runnable() {
             @Override
             public void run() {
                 System.out.println("Now it is 60 seconds later");
@@ -45,8 +42,7 @@ public class ScheduleExamples {
      * */
     public static void scheduleViaEventLoop() {
         Channel ch = CHANNEL_FROM_SOMEWHERE; // get reference from somewhere
-        ScheduledFuture<?> future = ch.eventLoop().schedule(
-            new Runnable() {
+        ScheduledFuture<?> future = ch.eventLoop().schedule(new Runnable() {
             @Override
             public void run() {
                 System.out.println("60 seconds later");
@@ -59,8 +55,7 @@ public class ScheduleExamples {
      * */
     public static void scheduleFixedViaEventLoop() {
         Channel ch = CHANNEL_FROM_SOMEWHERE; // get reference from somewhere
-        ScheduledFuture<?> future = ch.eventLoop().scheduleAtFixedRate(
-           new Runnable() {
+        ScheduledFuture<?> future = ch.eventLoop().scheduleAtFixedRate(new Runnable() {
            @Override
            public void run() {
                System.out.println("Run every 60 seconds");
@@ -73,8 +68,7 @@ public class ScheduleExamples {
      * */
     public static void cancelingTaskUsingScheduledFuture(){
         Channel ch = CHANNEL_FROM_SOMEWHERE; // get reference from somewhere
-        ScheduledFuture<?> future = ch.eventLoop().scheduleAtFixedRate(
-                new Runnable() {
+        ScheduledFuture<?> future = ch.eventLoop().scheduleAtFixedRate(new Runnable() {
                     @Override
                     public void run() {
                         System.out.println("Run every 60 seconds");
