@@ -25,8 +25,7 @@ public class FrameChunkDecoderTest {
         }
         ByteBuf input = buf.duplicate();
 
-        EmbeddedChannel channel = new EmbeddedChannel(
-            new FrameChunkDecoder(3));
+        EmbeddedChannel channel = new EmbeddedChannel(new FrameChunkDecoder(3));
 
         assertTrue(channel.writeInbound(input.readBytes(2)));
         try {

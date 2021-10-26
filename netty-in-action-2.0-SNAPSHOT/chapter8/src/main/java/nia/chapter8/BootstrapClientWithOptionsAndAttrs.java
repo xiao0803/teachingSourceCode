@@ -27,28 +27,22 @@ public class BootstrapClientWithOptionsAndAttrs {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(new NioEventLoopGroup())
             .channel(NioSocketChannel.class)
-            .handler(
-                new SimpleChannelInboundHandler<ByteBuf>() {
+            .handler(new SimpleChannelInboundHandler<ByteBuf>() {
                     @Override
-                    public void channelRegistered(ChannelHandlerContext ctx)
-                        throws Exception {
+                    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
                         Integer idValue = ctx.channel().attr(id).get();
                         // do something with the idValue
                     }
 
                     @Override
-                    protected void channelRead0(
-                        ChannelHandlerContext channelHandlerContext,
-                        ByteBuf byteBuf) throws Exception {
+                    protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
                         System.out.println("Received data");
                     }
                 }
             );
-        bootstrap.option(ChannelOption.SO_KEEPALIVE, true)
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
+        bootstrap.option(ChannelOption.SO_KEEPALIVE, true).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
         bootstrap.attr(id, 123456);
-        ChannelFuture future = bootstrap.connect(
-            new InetSocketAddress("www.manning.com", 80));
+        ChannelFuture future = bootstrap.connect(new InetSocketAddress("www.manning.com", 80));
         future.syncUninterruptibly();
     }
 }
