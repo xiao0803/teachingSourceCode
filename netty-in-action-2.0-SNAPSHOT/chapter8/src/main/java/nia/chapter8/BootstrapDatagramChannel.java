@@ -24,12 +24,9 @@ public class BootstrapDatagramChannel {
      */
     public void bootstrap() {
         Bootstrap bootstrap = new Bootstrap();
-        bootstrap.group(new OioEventLoopGroup()).channel(
-            OioDatagramChannel.class).handler(
-            new SimpleChannelInboundHandler<DatagramPacket>() {
+        bootstrap.group(new OioEventLoopGroup()).channel(OioDatagramChannel.class).handler(new SimpleChannelInboundHandler<DatagramPacket>() {
                 @Override
-                public void channelRead0(ChannelHandlerContext ctx,
-                    DatagramPacket msg) throws Exception {
+                public void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
                     // Do something with the packet
                 }
             }
@@ -37,8 +34,7 @@ public class BootstrapDatagramChannel {
         ChannelFuture future = bootstrap.bind(new InetSocketAddress(0));
         future.addListener(new ChannelFutureListener() {
             @Override
-            public void operationComplete(ChannelFuture channelFuture)
-               throws Exception {
+            public void operationComplete(ChannelFuture channelFuture) throws Exception {
                if (channelFuture.isSuccess()) {
                    System.out.println("Channel bound");
                } else {
