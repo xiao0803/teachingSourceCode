@@ -37,26 +37,23 @@ public class CmdHandlerInitializer extends ChannelInitializer<Channel> {
     }
 
     public static final class CmdDecoder extends LineBasedFrameDecoder {
+
         public CmdDecoder(int maxLength) {
             super(maxLength);
         }
 
         @Override
-        protected Object decode(ChannelHandlerContext ctx, ByteBuf buffer)
-            throws Exception {
+        protected Object decode(ChannelHandlerContext ctx, ByteBuf buffer) throws Exception {
             ByteBuf frame = (ByteBuf) super.decode(ctx, buffer);
             if (frame == null) {
                 return null;
             }
-            int index = frame.indexOf(frame.readerIndex(),
-                    frame.writerIndex(), SPACE);
-            return new Cmd(frame.slice(frame.readerIndex(), index),
-                    frame.slice(index + 1, frame.writerIndex()));
+            int index = frame.indexOf(frame.readerIndex(), frame.writerIndex(), SPACE);
+            return new Cmd(frame.slice(frame.readerIndex(), index), frame.slice(index + 1, frame.writerIndex()));
         }
     }
 
-    public static final class CmdHandler
-        extends SimpleChannelInboundHandler<Cmd> {
+    public static final class CmdHandler extends SimpleChannelInboundHandler<Cmd> {
         @Override
         public void channelRead0(ChannelHandlerContext ctx, Cmd msg)
             throws Exception {
