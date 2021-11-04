@@ -11,8 +11,8 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
  *
  * @author <a href="mailto:norman.maurer@gmail.com">Norman Maurer</a>
  */
-public class TextWebSocketFrameHandler
-    extends SimpleChannelInboundHandler<TextWebSocketFrame> {
+public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
+
     private final ChannelGroup group;
 
     public TextWebSocketFrameHandler(ChannelGroup group) {
@@ -20,13 +20,10 @@ public class TextWebSocketFrameHandler
     }
 
     @Override
-    public void userEventTriggered(ChannelHandlerContext ctx,
-        Object evt) throws Exception {
-        if (evt == WebSocketServerProtocolHandler
-             .ServerHandshakeStateEvent.HANDSHAKE_COMPLETE) {
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt == WebSocketServerProtocolHandler.ServerHandshakeStateEvent.HANDSHAKE_COMPLETE) {
             ctx.pipeline().remove(HttpRequestHandler.class);
-            group.writeAndFlush(new TextWebSocketFrame(
-                    "Client " + ctx.channel() + " joined"));
+            group.writeAndFlush(new TextWebSocketFrame("Client " + ctx.channel() + " joined"));
             group.add(ctx.channel());
         } else {
             super.userEventTriggered(ctx, evt);
@@ -34,8 +31,7 @@ public class TextWebSocketFrameHandler
     }
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx,
-        TextWebSocketFrame msg) throws Exception {
+    public void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
         group.writeAndFlush(msg.retain());
     }
 }
