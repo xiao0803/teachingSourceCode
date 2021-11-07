@@ -44,8 +44,7 @@ public class LogEventBroadcaster {
                 raf.seek(pointer);
                 String line;
                 while ((line = raf.readLine()) != null) {
-                    ch.writeAndFlush(new LogEvent(null, -1,
-                    file.getAbsolutePath(), line));
+                    ch.writeAndFlush(new LogEvent(null, -1, file.getAbsolutePath(), line));
                 }
                 pointer = raf.getFilePointer();
                 raf.close();
@@ -67,9 +66,7 @@ public class LogEventBroadcaster {
         if (args.length != 2) {
             throw new IllegalArgumentException();
         }
-        LogEventBroadcaster broadcaster = new LogEventBroadcaster(
-                new InetSocketAddress("255.255.255.255",
-                    Integer.parseInt(args[0])), new File(args[1]));
+        LogEventBroadcaster broadcaster = new LogEventBroadcaster(new InetSocketAddress("255.255.255.255", Integer.parseInt(args[0])), new File(args[1]));
         try {
             broadcaster.run();
         }
