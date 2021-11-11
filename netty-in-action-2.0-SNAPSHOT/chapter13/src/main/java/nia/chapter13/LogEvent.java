@@ -18,8 +18,7 @@ public final class LogEvent {
         this(null, -1, logfile, msg);
     }
 
-    public LogEvent(InetSocketAddress source, long received,
-        String logfile, String msg) {
+    public LogEvent(InetSocketAddress source, long received, String logfile, String msg) {
         this.source = source;
         this.logfile = logfile;
         this.msg = msg;
