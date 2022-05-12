@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 代码清单3-1
- * Created by 朱小厮 on 2018/7/22.
+ *
  */
 @Slf4j
 public class KafkaConsumerAnalysis {
@@ -23,10 +23,8 @@ public class KafkaConsumerAnalysis {
 
     public static Properties initConfig() {
         Properties props = new Properties();
-        props.put("key.deserializer",
-                "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("value.deserializer",
-                "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("bootstrap.servers", brokerList);
         props.put("group.id", groupId);
         props.put("client.id", "consumer.client.id.demo");
@@ -40,14 +38,10 @@ public class KafkaConsumerAnalysis {
 
         try {
             while (isRunning.get()) {
-                ConsumerRecords<String, String> records =
-                        consumer.poll(Duration.ofMillis(1000));
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
                 for (ConsumerRecord<String, String> record : records) {
-                    System.out.println("topic = " + record.topic()
-                            + ", partition = " + record.partition()
-                            + ", offset = " + record.offset());
-                    System.out.println("key = " + record.key()
-                            + ", value = " + record.value());
+                    System.out.println("topic = " + record.topic() + ", partition = " + record.partition() + ", offset = " + record.offset());
+                    System.out.println("key = " + record.key() + ", value = " + record.value());
                     //do something to process record.
                 }
             }
