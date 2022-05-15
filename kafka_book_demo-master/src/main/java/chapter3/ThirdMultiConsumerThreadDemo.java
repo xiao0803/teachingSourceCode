@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 代码清单3-12
- * Created by 朱小厮 on 2018/8/25.
+ *
  */
 public class ThirdMultiConsumerThreadDemo {
     public static final String brokerList = "localhost:9092";
@@ -25,10 +25,8 @@ public class ThirdMultiConsumerThreadDemo {
 
     public static Properties initConfig() {
         Properties props = new Properties();
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-                StringDeserializer.class.getName());
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-                StringDeserializer.class.getName());
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
@@ -37,8 +35,7 @@ public class ThirdMultiConsumerThreadDemo {
 
     public static void main(String[] args) {
         Properties props = initConfig();
-        KafkaConsumerThread consumerThread = new KafkaConsumerThread(props, topic,
-                Runtime.getRuntime().availableProcessors());
+        KafkaConsumerThread consumerThread = new KafkaConsumerThread(props, topic, Runtime.getRuntime().availableProcessors());
         consumerThread.start();
     }
 
@@ -51,8 +48,11 @@ public class ThirdMultiConsumerThreadDemo {
             kafkaConsumer = new KafkaConsumer<>(props);
             kafkaConsumer.subscribe(Collections.singletonList(topic));
             this.threadNumber = threadNumber;
-            executorService = new ThreadPoolExecutor(threadNumber, threadNumber,
-                    0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(1000),
+            executorService = new ThreadPoolExecutor(threadNumber,
+                    threadNumber,
+                    0L,
+                    TimeUnit.MILLISECONDS,
+                    new ArrayBlockingQueue<>(1000),
                     new ThreadPoolExecutor.CallerRunsPolicy());
         }
 
@@ -60,8 +60,7 @@ public class ThirdMultiConsumerThreadDemo {
         public void run() {
             try {
                 while (true) {
-                    ConsumerRecords<String, String> records =
-                            kafkaConsumer.poll(Duration.ofMillis(100));
+                    ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(100));
                     if (!records.isEmpty()) {
                         executorService.submit(new RecordsHandler(records));
                     }
@@ -76,6 +75,7 @@ public class ThirdMultiConsumerThreadDemo {
     }
 
     public static class RecordsHandler extends Thread {
+
         public final ConsumerRecords<String, String> records;
 
         public RecordsHandler(ConsumerRecords<String, String> records) {

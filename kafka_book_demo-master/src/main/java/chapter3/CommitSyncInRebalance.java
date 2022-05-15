@@ -10,9 +10,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 代码清单3-9
- * Created by 朱小厮 on 2018/8/19.
+ *
  */
 public class CommitSyncInRebalance {
+
     public static final String brokerList = "localhost:9092";
     public static final String topic = "topic-demo";
     public static final String groupId = "group.demo";
@@ -20,10 +21,8 @@ public class CommitSyncInRebalance {
 
     public static Properties initConfig() {
         Properties props = new Properties();
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-                StringDeserializer.class.getName());
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-                StringDeserializer.class.getName());
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         return props;
@@ -48,13 +47,10 @@ public class CommitSyncInRebalance {
 
         try {
             while (isRunning.get()) {
-                ConsumerRecords<String, String> records =
-                        consumer.poll(Duration.ofMillis(100));
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, String> record : records) {
                     //process the record.
-                    currentOffsets.put(
-                            new TopicPartition(record.topic(), record.partition()),
-                            new OffsetAndMetadata(record.offset() + 1));
+                    currentOffsets.put(new TopicPartition(record.topic(), record.partition()), new OffsetAndMetadata(record.offset() + 1));
                 }
                 consumer.commitAsync(currentOffsets, null);
             }
