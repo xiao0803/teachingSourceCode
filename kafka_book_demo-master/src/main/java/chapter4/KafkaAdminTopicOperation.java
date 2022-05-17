@@ -7,9 +7,10 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * 代码清单4-3 & 4-4
- * Created by 朱小厮 on 2018/7/21.
+ *
  */
 public class KafkaAdminTopicOperation {
+
     public static final String brokerList = "localhost:9092";
     public static final String topic = "topic-admin";
 
@@ -56,8 +57,7 @@ public class KafkaAdminTopicOperation {
         NewTopic newTopic = new NewTopic(topic, replicasAssignments);
 
         //代码清单4-4 可以从这里跟进去
-        CreateTopicsResult result = client.
-                createTopics(Collections.singleton(newTopic));
+        CreateTopicsResult result = client.createTopics(Collections.singleton(newTopic));
         try {
             result.all().get();
         } catch (InterruptedException | ExecutionException e) {
@@ -84,9 +84,9 @@ public class KafkaAdminTopicOperation {
     }
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-//        createTopic();
+        //createTopic();
         describeTopic();
-//        deleteTopic();
+        //deleteTopic();
 
 //        Properties props = new Properties();
 //        props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, brokerList);
@@ -107,8 +107,7 @@ public class KafkaAdminTopicOperation {
 //        result.all().get();
 //    }
 //
-//    public static void createTopic(AdminClient client, NewTopic newTopic) throws ExecutionException,
-//            InterruptedException {
+//    public static void createTopic(AdminClient client, NewTopic newTopic) throws ExecutionException, InterruptedException {
 //        CreateTopicsResult result = client.createTopics(Collections.singleton(newTopic));
 //        result.all().get();
 //    }

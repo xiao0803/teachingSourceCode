@@ -2,7 +2,7 @@ package chapter4;
 
 /**
  * 代码清单4-1 & 4-2
- * Created by 朱小厮 on 2018/9/9.
+ *
  */
 public class TopicCommandUtils {
 
