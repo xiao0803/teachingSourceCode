@@ -10,7 +10,7 @@ import java.util.Properties;
 
 /**
  * 代码清单7-2
- * Created by 朱小厮 on 2018/10/17.
+ *
  */
 public class TransactionOnlySend {
     public static final String topic = "topic-transaction";
@@ -19,10 +19,8 @@ public class TransactionOnlySend {
 
     public static void main(String[] args) {
         Properties properties = new Properties();
-        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-                StringSerializer.class.getName());
-        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                StringSerializer.class.getName());
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
         properties.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, transactionId);
 
