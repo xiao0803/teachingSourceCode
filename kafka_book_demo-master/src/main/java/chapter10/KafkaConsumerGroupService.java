@@ -20,7 +20,7 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * 代码清单10-2
- * Created by 朱小厮 on 2018/10/21.
+ *
  */
 @Slf4j
 public class KafkaConsumerGroupService {
@@ -36,8 +36,7 @@ public class KafkaConsumerGroupService {
         Properties props = new Properties();
         props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, brokerList);
         adminClient = AdminClient.create(props);
-        kafkaConsumer = ConsumerGroupUtils.createNewConsumer(brokerList,
-                "kafkaAdminClientDemoGroupId");
+        kafkaConsumer = ConsumerGroupUtils.createNewConsumer(brokerList, "kafkaAdminClientDemoGroupId");
     }
 
     public void close(){
@@ -49,41 +48,30 @@ public class KafkaConsumerGroupService {
         }
     }
 
-    public List<PartitionAssignmentState> collectGroupAssignment(
-            String group) throws ExecutionException, InterruptedException {
-        DescribeConsumerGroupsResult groupResult = adminClient
-                .describeConsumerGroups(Collections.singleton(group));
-        ConsumerGroupDescription description =
-                groupResult.all().get().get(group);
+    public List<PartitionAssignmentState> collectGroupAssignment(String group) throws ExecutionException, InterruptedException {
+        DescribeConsumerGroupsResult groupResult = adminClient.describeConsumerGroups(Collections.singleton(group));
+        ConsumerGroupDescription description = groupResult.all().get().get(group);
 
         List<TopicPartition> assignedTps = new ArrayList<>();
         List<PartitionAssignmentState> rowsWithConsumer = new ArrayList<>();
         Collection<MemberDescription> members = description.members();
         if (members != null) {
-            ListConsumerGroupOffsetsResult offsetResult = adminClient
-                    .listConsumerGroupOffsets(group);
-            Map<TopicPartition, OffsetAndMetadata> offsets = offsetResult
-                    .partitionsToOffsetAndMetadata().get();
+            ListConsumerGroupOffsetsResult offsetResult = adminClient.listConsumerGroupOffsets(group);
+            Map<TopicPartition, OffsetAndMetadata> offsets = offsetResult.partitionsToOffsetAndMetadata().get();
             if (offsets != null && !offsets.isEmpty()) {
                 String state = description.state().toString();
                 if (state.equals("Stable")) {
-                    rowsWithConsumer = getRowsWithConsumer(description, offsets,
-                            members, assignedTps, group);
+                    rowsWithConsumer = getRowsWithConsumer(description, offsets, members, assignedTps, group);
                 }
             }
-            List<PartitionAssignmentState> rowsWithoutConsumer =
-                    getRowsWithoutConsumer(description, offsets,
-                            assignedTps, group);
+            List<PartitionAssignmentState> rowsWithoutConsumer = getRowsWithoutConsumer(description, offsets, assignedTps, group);
             rowsWithConsumer.addAll(rowsWithoutConsumer);
         }
         return rowsWithConsumer;
     }
 
-    private List<PartitionAssignmentState> getRowsWithConsumer(
-            ConsumerGroupDescription description,
-            Map<TopicPartition, OffsetAndMetadata> offsets,
-            Collection<MemberDescription> members,
-            List<TopicPartition> assignedTps, String group) {
+    private List<PartitionAssignmentState> getRowsWithConsumer(ConsumerGroupDescription description, Map<TopicPartition, OffsetAndMetadata> offsets,
+            Collection<MemberDescription> members, List<TopicPartition> assignedTps, String group) {
         List<PartitionAssignmentState> rowsWithConsumer = new ArrayList<>();
         for (MemberDescription member : members) {
             MemberAssignment assignment = member.assignment();
@@ -98,11 +86,9 @@ public class KafkaConsumerGroupService {
                         .clientId(member.clientId()).build());
 
             } else {
-                Map<TopicPartition, Long> logSizes =
-                        kafkaConsumer.endOffsets(tpSet);
+                Map<TopicPartition, Long> logSizes = kafkaConsumer.endOffsets(tpSet);
                 assignedTps.addAll(tpSet);
-                List<PartitionAssignmentState> tempList = tpSet.stream()
-                        .sorted(comparing(TopicPartition::partition))
+                List<PartitionAssignmentState> tempList = tpSet.stream().sorted(comparing(TopicPartition::partition))
                         .map(tp -> getPasWithConsumer(logSizes, offsets, tp,
                                 group, member, description)).collect(toList());
                 rowsWithConsumer.addAll(tempList);
@@ -111,12 +97,8 @@ public class KafkaConsumerGroupService {
         return rowsWithConsumer;
     }
 
-    private PartitionAssignmentState getPasWithConsumer(
-            Map<TopicPartition, Long> logSizes,
-            Map<TopicPartition, OffsetAndMetadata> offsets,
-            TopicPartition tp, String group,
-            MemberDescription member,
-            ConsumerGroupDescription description) {
+    private PartitionAssignmentState getPasWithConsumer(Map<TopicPartition, Long> logSizes, Map<TopicPartition, OffsetAndMetadata> offsets,
+            TopicPartition tp, String group, MemberDescription member, ConsumerGroupDescription description) {
         long logSize = logSizes.get(tp);
         if (offsets.containsKey(tp)) {
             long offset = offsets.get(tp).offset();
@@ -141,9 +123,7 @@ public class KafkaConsumerGroupService {
         return lag < 0 ? 0 : lag;
     }
 
-    private List<PartitionAssignmentState> getRowsWithoutConsumer(
-            ConsumerGroupDescription description,
-            Map<TopicPartition, OffsetAndMetadata> offsets,
+    private List<PartitionAssignmentState> getRowsWithoutConsumer(ConsumerGroupDescription description, Map<TopicPartition, OffsetAndMetadata> offsets,
             List<TopicPartition> assignedTps, String group) {
         Set<TopicPartition> tpSet = offsets.keySet();
 
@@ -162,44 +142,33 @@ public class KafkaConsumerGroupService {
                             .topic(tp.topic()).partition(tp.partition())
                             .logSize(logSize).lag(getLag(offset, logSize))
                             .offset(offset).build();
-                }).sorted(comparing(PartitionAssignmentState::getPartition))
-                .collect(toList());
+                }).sorted(comparing(PartitionAssignmentState::getPartition)).collect(toList());
     }
 
-    public static void main(String[] args) throws ExecutionException,
-            InterruptedException {
-        KafkaConsumerGroupService service =
-                new KafkaConsumerGroupService("localhost:9092");
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        KafkaConsumerGroupService service = new KafkaConsumerGroupService("localhost:9092");
         service.init();
-        List<PartitionAssignmentState> list =
-                service.collectGroupAssignment("groupIdMonitor");
+        List<PartitionAssignmentState> list = service.collectGroupAssignment("groupIdMonitor");
         ConsumerGroupUtils.printPasList(list);
     }
 }
 
 class ConsumerGroupUtils{
-    public static KafkaConsumer<String, String> createNewConsumer(
-            String brokerUrl, String groupId) {
+    public static KafkaConsumer<String, String> createNewConsumer(String brokerUrl, String groupId) {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerUrl);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-                StringDeserializer.class.getName());
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-                StringDeserializer.class.getName());
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         return new KafkaConsumer<>(props);
     }
 
     public static void printPasList(List<PartitionAssignmentState> list) {
-        System.out.println(String.format("%-40s %-10s %-15s %-15s %-10s" +
-                        " %-50s%-30s %s", "TOPIC", "PARTITION",
-                "CURRENT-OFFSET", "LOG-END-OFFSET", "LAG",
-                "CONSUMER-ID", "HOST", "CLIENT-ID"));
-
+        System.out.println(String.format("%-40s %-10s %-15s %-15s %-10s" + " %-50s%-30s %s", "TOPIC", "PARTITION",
+                "CURRENT-OFFSET", "LOG-END-OFFSET", "LAG", "CONSUMER-ID", "HOST", "CLIENT-ID"));
         list.forEach(item ->
-                System.out.println(String.format("%-40s %-10s %-15s " +
-                                "%-15s %-10s %-50s%-30s %s",
+                System.out.println(String.format("%-40s %-10s %-15s " + "%-15s %-10s %-50s%-30s %s",
                         item.getTopic(), item.getPartition(), item.getOffset(),
                         item.getLogSize(), item.getLag(),
                         Optional.ofNullable(item.getConsumerId()).orElse("-"),
