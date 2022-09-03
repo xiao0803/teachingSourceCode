@@ -21,6 +21,7 @@ public class KafkaConsumerAnalysis {
     public static final String groupId = "group.demo";
     public static final AtomicBoolean isRunning = new AtomicBoolean(true);
 
+
     public static Properties initConfig() {
         Properties props = new Properties();
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
